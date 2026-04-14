@@ -5,10 +5,10 @@
 
 <div class="market-form-page">
     <h1 class="market-form-title">Create</h1>
-    <div class="market-form-subtitle">LeaseListing</div>
+    <div class="market-form-subtitle">Lease Listing</div>
 
     <div class="market-form-shell">
-        <form class="market-form" asp-action="Post" asp-controller="LeaseAPI" method="post" enctype="multipart/form-data">
+        <form class="market-form" action="/api/LeaseAPI" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="form-group">
@@ -62,7 +62,7 @@
             
             <div class="market-form-actions">
                 <button type="submit" class="market-btn-primary">Create</button>
-                <a asp-action="Index" class="market-btn-link">Back to List</a>
+                <a href="/Listings/Leases/Manage" class="market-btn-link">Cancel</a>
             </div>
         </form>
     </div>

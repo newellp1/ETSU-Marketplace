@@ -20,7 +20,8 @@
                 </div>
             </div>
 
-            <form action="/api/LeaseAPI/delete/@Model.Id" method="post">
+            <form action="/api/LeaseAPI/@Model.Id" method="post">
+                <input type="hidden" name="_method" value="DELETE" />
 
                 <div style="margin-top:18px; padding:14px; border-radius:14px; background:rgba(245,158,11,0.18); font-weight:800; color:#7c5600;">
                     This action cannot be undone.

@@ -5,21 +5,21 @@
 
 <div class="market-form-page">
     <h1 class="market-form-title">Create</h1>
-    <div class="market-form-subtitle">ItemListing</div>
+    <div class="market-form-subtitle">Item Listing</div>
 
     <div class="market-form-shell">
-        <form class="market-form" asp-action="Post" asp-controller="ItemAPI" method="post"
-              enctype="multipart/form-data">
+        <form class="market-form" action="/api/ItemAPI" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
             <div class="form-group">
                 <label class="control-label">Categories</label>
-                    @foreach (Category category in Enum.GetValues(typeof(Category)))
-                    {
-                        <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="SelectedCategories" value="@category" />
+                @foreach (Category category in Enum.GetValues(typeof(Category)))
+                {
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="selectedCategories" value="@category" />
                         <label class="form-check-label">@category</label>
-                        </div>
-                    }
+                    </div>
+                }
             </div>
 
             <div class="form-group">
@@ -57,7 +57,7 @@
 
             <div class="market-form-actions">
                 <button type="submit" class="market-btn-primary">Create</button>
-                <a asp-action="Index" class="market-btn-link">Back to List</a>
+                <a href="/Listings/Items/Manage" class="market-btn-link">Cancel</a>
             </div>
         </form>
     </div>

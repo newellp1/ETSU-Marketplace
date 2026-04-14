@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.HttpOverrides;
 using ETSU_Marketplace.Hubs;
 using ETSU_Marketplace.Services;
 using ETSU_Marketplace.Models;
@@ -14,10 +16,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 );
 
 // Add Identity services
-builder.Services.AddDefaultIdentity<ApplicationUser>(options => 
+builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     {
         options.SignIn.RequireConfirmedAccount = false;
-        // Configure other options as needed
     })
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -31,27 +32,29 @@ builder.Services.AddScoped<IUserRepository, DbUserRepository>();
 builder.Services.AddHttpClient<GitHubIssueService>();
 builder.Services.AddSignalR();
 
-
 var app = builder.Build();
-
-app.UseHttpMethodOverride();
 
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    db.Database.Migrate(); // This replaces 'dotnet ef database update'
+    db.Database.Migrate();
 }
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseStaticFiles();
 app.UseHttpsRedirection();
+
+app.UseHttpMethodOverride(new HttpMethodOverrideOptions
+{
+    FormFieldName = "_method"
+});
+
 app.UseRouting();
 
 app.UseHttpMetrics(options =>
@@ -74,10 +77,8 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
-// Add Razor Pages for Identity UI
 app.MapRazorPages();
 
 app.MapHub<MarketplaceHub>("/marketplaceHub");
-
 
 app.Run();

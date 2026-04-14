@@ -8,8 +8,8 @@
     <p class="market-form-subtitle">Update the details for "@Model.Title"</p>
 
     <div class="market-form-shell">
-        <form class="market-form" action="/api/ItemAPI/update" method="post" 
-        enctype="multipart/form-data">
+        <form class="market-form" action="/api/ItemAPI/@Model.Id" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="_method" value="PUT" />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <input type="hidden" asp-for="Id" />
@@ -27,8 +27,12 @@
                 @foreach (Category category in Enum.GetValues(typeof(Category)))
                 {
                     <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="SelectedCategories" value="@category" />
-                    <label class="form-check-label">@category</label>
+                        <input class="form-check-input"
+                               type="checkbox"
+                               name="selectedCategories"
+                               value="@category"
+                               @(Model.ListingCategories.Any(lc => lc.Category == category) ? "checked" : null) />
+                        <label class="form-check-label">@category</label>
                     </div>
                 }
             </div>

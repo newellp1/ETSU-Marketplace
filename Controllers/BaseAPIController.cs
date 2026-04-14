@@ -49,14 +49,16 @@ public abstract class BaseAPIController<TEntity, TRepository> : ControllerBase
         return LocalRedirect(GetRedirectPath());
     }
 
-    [HttpGet("all")]
-    public virtual async Task<IActionResult> Get()
+    // GET: api/[controller]
+    [HttpGet]
+    public virtual async Task<IActionResult> GetAll()
     {
         return Ok(await _repository.ReadAllAsync());
     }
 
-    [HttpGet("one/{id}")]
-    public virtual async Task<IActionResult> Get(int id)
+    // GET: api/[controller]/{id}
+    [HttpGet("{id}")]
+    public virtual async Task<IActionResult> GetById(int id)
     {
         var listing = await _repository.ReadAsync(id);
         if (listing == null) return NotFound();
@@ -64,7 +66,8 @@ public abstract class BaseAPIController<TEntity, TRepository> : ControllerBase
         return Ok(listing);
     }
 
-    [HttpPost("delete/{id}")]
+    // DELETE: api/[controller]/{id}
+    [HttpDelete("{id}")]
     public virtual async Task<IActionResult> Delete(int id)
     {
         var existing = await _repository.ReadAsync(id);
@@ -76,6 +79,7 @@ public abstract class BaseAPIController<TEntity, TRepository> : ControllerBase
         return LocalRedirect(GetRedirectPath());
     }
 
+    // POST: api/[controller]/toggle-sold/{id}
     [HttpPost("toggle-sold/{id}")]
     public virtual async Task<IActionResult> ToggleSoldStatus(int id)
     {

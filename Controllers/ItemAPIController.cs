@@ -6,22 +6,26 @@ using Microsoft.AspNetCore.Mvc;
 namespace ETSU_Marketplace.Controllers;
 
 [Route("api/[controller]")]
+[ApiController]
 public class ItemAPIController : BaseAPIController<ItemListing, IItemListingRepository>
 {
-    public ItemAPIController(IItemListingRepository itemRepo, UserManager<ApplicationUser> userManager)
+    public ItemAPIController(
+        IItemListingRepository itemRepo,
+        UserManager<ApplicationUser> userManager)
         : base(itemRepo, userManager) { }
 
     protected override string GetRedirectPath() => "/Manage";
 
-    [HttpPost("create")]
-    public async Task<IActionResult> Post(
+    // POST: api/ItemAPI
+    [HttpPost]
+    public async Task<IActionResult> Create(
         [FromForm] ItemListing entity,
-        [FromForm] List<Category> SelectedCategories,
+        [FromForm] List<Category> selectedCategories,
         List<IFormFile> images)
     {
         entity.ListingCategories.Clear();
 
-        foreach (var category in SelectedCategories)
+        foreach (var category in selectedCategories)
         {
             entity.ListingCategories.Add(new ListingCategory
             {
@@ -32,15 +36,22 @@ public class ItemAPIController : BaseAPIController<ItemListing, IItemListingRepo
         return await CreateEntity(entity, images);
     }
 
-    [HttpPost("update")]
-    public async Task<IActionResult> Put(
+    // PUT: api/ItemAPI/{id}
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(
+        int id,
         [FromForm] ItemListing entity,
-        [FromForm] List<Category> SelectedCategories,
+        [FromForm] List<Category> selectedCategories,
         List<IFormFile> images)
     {
+        if (id != entity.Id)
+        {
+            return BadRequest("Route ID does not match entity ID.");
+        }
+
         entity.ListingCategories.Clear();
 
-        foreach (var category in SelectedCategories)
+        foreach (var category in selectedCategories)
         {
             entity.ListingCategories.Add(new ListingCategory
             {

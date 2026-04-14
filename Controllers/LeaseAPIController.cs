@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ETSU_Marketplace.Controllers;
 
 [Route("api/[controller]")]
+[ApiController]
 public class LeaseAPIController : BaseAPIController<LeaseListing, ILeaseListingRepository>
 {
     public LeaseAPIController(
@@ -17,15 +18,22 @@ public class LeaseAPIController : BaseAPIController<LeaseListing, ILeaseListingR
 
     protected override string GetRedirectPath() => "/Manage";
 
-    [HttpPost("create")]
-    public async Task<IActionResult> Post([FromForm] LeaseListing entity, List<IFormFile> images)
+    // POST: api/LeaseAPI
+    [HttpPost]
+    public async Task<IActionResult> Create([FromForm] LeaseListing entity, List<IFormFile> images)
     {
         return await CreateEntity(entity, images);
     }
 
-    [HttpPost("update")]
-    public async Task<IActionResult> Put([FromForm] LeaseListing entity, List<IFormFile> images)
+    // PUT: api/LeaseAPI/{id}
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(int id, [FromForm] LeaseListing entity, List<IFormFile> images)
     {
+        if (id != entity.Id)
+        {
+            return BadRequest("Route ID does not match entity ID.");
+        }
+
         return await UpdateEntity(entity, images);
     }
 }

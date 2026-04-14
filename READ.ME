@@ -1,0 +1,121 @@
+# ETSU Marketplace 
+(Palwasha Newell & Nathanael Wolfe)
+
+## Project Overview
+ETSU Marketplace is a full-stack ASP.NET Core MVC web application designed to allow users to create, browse, and manage marketplace listings. The platform enables users to buy, sell, and lease items while interacting with other users through messaging and personalized features such as favorites.
+
+The application demonstrates core web development concepts including MVC architecture, RESTful APIs, database design, authentication, and client-side interactivity.
+
+---
+
+## Features
+- User registration and authentication
+- Create, view, update, and delete listings (items and leases)
+- Search and filter listings
+- Favorite/unfavorite listings
+- Real-time messaging between users
+- Categorization of listings
+- Responsive UI for desktop and mobile devices
+
+---
+
+## Technologies Used
+- ASP.NET Core MVC
+- Entity Framework Core
+- SQLite (or your database)
+- JavaScript (AJAX, Fetch API, SignalR)
+- Bootstrap (responsive design)
+- HTML5 / CSS3
+
+---
+
+## System Architecture
+
+![System Architecture](docs/ArchDesign.png)
+
+The application follows the ASP.NET Core MVC architecture pattern. Controllers handle user requests, services manage business logic, and Entity Framework Core manages data persistence. A RESTful API is integrated to support asynchronous operations and client-side interactions.
+
+---
+
+## Data Model
+
+![Entity Relationship Diagram](docs/ERD.png)
+
+The data model consists of multiple interconnected entities including users, listings, categories, messages, and favorites. Relationships include one-to-many and many-to-many associations, implemented using Entity Framework Core.
+
+---
+
+## API Endpoints
+
+The application provides a RESTful API to support data operations and asynchronous features.
+
+### Item Listings
+- `GET /api/ItemAPI` – Retrieve all item listings
+- `GET /api/ItemAPI/{id}` – Retrieve a specific item listing
+- `POST /api/ItemAPI` – Create a new item listing
+- `PUT /api/ItemAPI/{id}` – Update an existing item listing
+- `DELETE /api/ItemAPI/{id}` – Delete an item listing
+
+### Lease Listings
+- `GET /api/LeaseAPI` – Retrieve all lease listings
+- `GET /api/LeaseAPI/{id}` – Retrieve a specific lease listing
+- `POST /api/LeaseAPI` – Create a new lease listing
+- `PUT /api/LeaseAPI/{id}` – Update a lease listing
+- `DELETE /api/LeaseAPI/{id}` – Delete a lease listing
+
+---
+
+## User Interface & User Experience (UI/UX)
+
+The ETSU Marketplace application is designed with a focus on usability, accessibility, and responsiveness to provide a seamless experience for all users.
+
+### Design Approach
+The interface uses a clean layout with consistent design patterns and clear visual hierarchy, making it easy for users to navigate and interact with the system.
+
+### Responsive Design
+Bootstrap is used to ensure responsiveness across desktop, tablet, and mobile devices.
+
+### Navigation
+The application uses a structured navigation bar that allows users to easily access:
+- Listings
+- Create Listing
+- Favorites
+- Messaging
+
+### Accessibility (WCAG 2.1 Considerations)
+- Semantic HTML elements are used
+- Images include descriptive alt text
+- Color contrast is considered for readability
+- Forms include labels and validation messages
+- Navigation is consistent and predictable
+
+### User Interaction
+Interactive features such as real-time messaging and dynamic search improve user engagement and reduce page reloads.
+
+---
+
+## Testing Strategy
+The application includes both manual and automated testing strategies. Test cases are designed to validate core functionalities such as listing creation, user authentication, messaging, and API operations.
+
+---
+
+## Development Practices
+- Version control is managed using Git and GitHub
+- Code follows consistent naming and structure conventions
+- Comments are included to describe the purpose of classes, methods, and functions
+- Modular design is used to separate concerns (controllers, services, models)
+
+---
+
+## Deployment
+The application can be run locally using the .NET CLI or Visual Studio.
+
+---
+
+## Setup Instructions
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/newellp1/ETSU-Marketplace.git
+
+## AI Disclosure
+ChatGPT was used to assist with debugging, identifying missing project requirements, and improving documentation.  These tools provided guidance and suggestions.  However, all design decisions, implementation, and final code were completed by the development team.

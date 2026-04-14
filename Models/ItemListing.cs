@@ -1,9 +1,11 @@
+using System.ComponentModel.DataAnnotations;
 using ETSU_Marketplace.Models;
 
 public class ItemListing : Listing
 {
-    public Condition Condition {get; set;}
+    [Required(ErrorMessage = "Please select an item condition.")]
+    public Condition Condition { get; set; }
 
-    //One to Many relationship with Category
+    // Many-to-many relationship with Category through ListingCategory
     public ICollection<ListingCategory> ListingCategories { get; set; } = new List<ListingCategory>();
 }

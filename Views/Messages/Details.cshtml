@@ -1,0 +1,104 @@
+@model ETSU_Marketplace.ViewModels.ConversationDetailsViewModel
+
+@using System.Security.Claims
+@{
+    ViewData["Title"] = "Conversation";
+    var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+}
+
+<section class="listings-wrap">
+    <a class="back-link" href="/Messages">← Back to Messages</a>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1 class="page-title mb-0">@Model.OtherUserName</h1>
+            <div class="text-muted">
+                About: <a href="@Model.DetailsUrl">@Model.ListingTitle</a>
+            </div>
+        </div>
+        @if (Model.IsSold)
+        {
+            <span class="badge bg-danger">Sold</span>
+        }
+    </div>
+
+    <div class="chat-card">
+        <div id="chatLog" class="chat-messages" style="min-height:300px;">
+            @foreach (var msg in Model.Messages)
+            {
+                var mine = msg.SenderId == currentUserId;
+                <div class="mb-2 text-@(mine ? "end" : "start")">
+                    <div class="d-inline-block p-2 rounded @(mine ? "bg-dark text-white" : "bg-light")">
+                        @msg.Text
+                    </div>
+                    <div class="small text-muted">
+                        @msg.SentAtUtc.ToLocalTime().ToString("g")
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="chat-composer mt-3">
+            <input id="chatInput" class="chat-input" placeholder="Type a message..." />
+            <button id="sendBtn" class="chat-send-btn" type="button">Send</button>
+        </div>
+    </div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
+<script>
+    const conversationId = @Model.ConversationId;
+    const currentUserId = "@currentUserId";
+
+    function renderMsg(msg) {
+        const log = document.getElementById("chatLog");
+        const mine = msg.senderId === currentUserId;
+
+        const wrapper = document.createElement("div");
+        wrapper.className = "mb-2 text-" + (mine ? "end" : "start");
+
+        const bubble = document.createElement("div");
+        bubble.className = "d-inline-block p-2 rounded " + (mine ? "bg-dark text-white" : "bg-light");
+        bubble.textContent = msg.text ?? "";
+
+        const meta = document.createElement("div");
+        meta.className = "small text-muted";
+        meta.textContent = msg.sentAtUtc ? new Date(msg.sentAtUtc).toLocaleString() : "";
+
+        wrapper.appendChild(bubble);
+        wrapper.appendChild(meta);
+        log.appendChild(wrapper);
+        log.scrollTop = log.scrollHeight;
+    }
+
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/marketplaceHub")
+        .withAutomaticReconnect()
+        .build();
+
+    connection.on("ReceiveConversationMessage", (msg) => renderMsg(msg));
+
+    async function start() {
+        await connection.start();
+        await connection.invoke("JoinConversation", conversationId);
+
+        const log = document.getElementById("chatLog");
+        log.scrollTop = log.scrollHeight;
+    }
+
+    document.getElementById("sendBtn").addEventListener("click", async () => {
+        const input = document.getElementById("chatInput");
+        const text = input.value.trim();
+        if (!text) return;
+
+        await connection.invoke("SendConversationMessage", conversationId, text);
+        input.value = "";
+        input.focus();
+    });
+
+    document.getElementById("chatInput").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") document.getElementById("sendBtn").click();
+    });
+
+    start();
+</script>

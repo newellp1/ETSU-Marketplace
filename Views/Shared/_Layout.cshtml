@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ETSU_Marketplace</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ETSU_Marketplace.styles.css" asp-append-version="true" />
+</head>
+
+<body>
+    <header class="topbar">
+        <div class="left-group">
+            <a class="logo-link" asp-controller="Home" asp-action="Index">
+                <img src="~/images/logo.png" alt="ETSU Marketplace" class="logo" />
+            </a>
+
+            <form class="search-form" asp-controller="Home" asp-action="Search" method="get">
+                <input class="search-input" type="search" name="q" placeholder="Search" />
+            </form>
+        </div>
+
+        <div class="topbar-actions">
+            <a asp-controller="Favorites" asp-action="Index" class="favorites-btn" aria-label="Favorites">
+                <img src="~/images/favoritesicon.png" alt="Favorites" class="nav-icon" />
+            </a>
+
+            <a asp-controller="Messages" asp-action="Index" class="messages-btn" aria-label="Messages">
+                <img src="~/images/messagingicon.png" alt="Messages" class="nav-icon" />
+            </a>
+
+            <div class="dropdown">
+                <button class="btn btn-dark fw-bold dropdown-toggle" type="button" id="listingsDropdown"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                    Sell
+                </button>
+                <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="listingsDropdown">
+                    <li><a class="dropdown-item" href="/Listings/Items/Create">Items</a></li>
+                    <li><a class="dropdown-item" href="/Listings/Leases/Create">Leases</a></li>
+                    <li><a class="dropdown-item" href="/Manage">Manage Listings</a></li>
+                </ul>
+            </div>
+
+            <div class="navbar-nav ms-auto">
+                <partial name="_LoginPartial" />
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2026 - ETSU_Marketplace - 
+            <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a> |
+            <a asp-controller="BugReport" asp-action="Index">Report a Bug</a>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

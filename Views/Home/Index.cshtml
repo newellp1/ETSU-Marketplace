@@ -1,0 +1,96 @@
+﻿@model ETSU_Marketplace.ViewModels.HomeIndexViewModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<nav class="category-nav">
+    <a href="/Listings/Items?category=Textbook">Textbook</a>
+    <a href="/Listings/Items?category=Clothing">Clothing</a>
+    <a href="/Listings/Items?category=Vehicles">Vehicles</a>
+    <a href="/Listings/Items?category=Gaming">Gaming</a>
+    <a href="/Listings/Items?category=Accessories">Accessories</a>
+    <a href="/Listings/Items?category=Furniture">Furniture</a>
+    <a href="/Listings/Items?category=Home">Home</a>
+    <a href="/Listings/Leases" class="lease-link">Lease</a>
+</nav>
+
+<section class="split-hero">
+    <div class="hero-card hero-item">
+        <div class="hero-overlay">
+            <h2>Item</h2>
+            <a class="hero-btn" href="/Listings/Items">Shop</a>
+        </div>
+    </div>
+
+    <div class="hero-card hero-lease">
+        <div class="hero-overlay">
+            <h2>Lease</h2>
+            <a class="hero-btn" href="/Listings/Leases">Shop</a>
+        </div>
+    </div>
+</section>
+
+<section class="home-latest">
+
+    <div class="latest-bar">
+        <h2 class="latest-title">Latest Item Listings</h2>
+        <a class="latest-seeall" href="/Listings/Items">See all</a>
+    </div>
+
+    <div class="latest-grid">
+        @foreach (var card in Model.LatestItemListings)
+        {
+            <a class="latest-card" href="@card.DetailsUrl">
+                <div class="latest-img" style="position:relative;">
+                    <img src="@(card.ImageUrl)" alt="@card.Title" />
+
+                    @if (card.IsSold)
+                    {
+                        <span class="badge bg-danger position-absolute top-0 end-0 m-2">SOLD</span>
+                    }
+                </div>
+
+                <div class="latest-price">$@card.Price.ToString("0.00")</div>
+                <div class="latest-name">
+                    @card.Title
+                    @if (card.IsSold)
+                    {
+                        <span class="text-danger"> • Sold</span>
+                    }
+                </div>
+            </a>
+        }
+    </div>
+
+    <div class="latest-bar">
+        <h2 class="latest-title">Latest Lease Listings</h2>
+        <a class="latest-seeall" href="/Listings/Leases">See all</a>
+    </div>
+
+    <div class="latest-grid">
+        @foreach (var card in Model.LatestLeaseListings)
+        {
+            <a class="latest-card" href="@card.DetailsUrl">
+                <div class="latest-img" style="position:relative;">
+                    <img src="@(string.IsNullOrWhiteSpace(card.ImageUrl) ? "/images/placeholder.png" : card.ImageUrl)"
+                         alt="@card.Title" />
+
+                    @if (card.IsSold)
+                    {
+                        <span class="badge bg-danger position-absolute top-0 end-0 m-2">SOLD</span>
+                    }
+                </div>
+
+                <div class="latest-price">$@card.Price.ToString("0.00")</div>
+                <div class="latest-name">
+                    @card.Title
+                    @if (card.IsSold)
+                    {
+                        <span class="text-danger"> • Sold</span>
+                    }
+                </div>
+            </a>
+        }
+    </div>
+
+</section>

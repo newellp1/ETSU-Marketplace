@@ -1,0 +1,69 @@
+@model ItemListing
+@{
+    ViewData["Title"] = "Edit Item";
+}
+
+<div class="market-form-page">
+    <h1 class="market-form-title">Edit Listing</h1>
+    <p class="market-form-subtitle">Update the details for "@Model.Title"</p>
+
+    <div class="market-form-shell">
+        <form class="market-form" action="/api/ItemAPI/update" method="post" 
+        enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="CreatedAt" />
+
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Categories</label>
+
+                @foreach (Category category in Enum.GetValues(typeof(Category)))
+                {
+                    <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="SelectedCategories" value="@category" />
+                    <label class="form-check-label">@category</label>
+                    </div>
+                }
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Condition" class="control-label"></label>
+                <select asp-for="Condition" class="form-control"
+                        asp-items="Html.GetEnumSelectList<Condition>()">
+                    <option value="">-- Select Condition --</option>
+                </select>
+                <span asp-validation-for="Condition" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" type="number" step="0.01" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <textarea asp-for="Description" class="form-control"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label">Upload Images</label>
+                <input type="file" name="images" class="form-control" multiple accept="image/*" />
+                <small class="text-muted">You can select multiple files.</small>
+            </div>
+
+            <div class="market-form-actions">
+                <button type="submit" class="market-btn-primary">Save Changes</button>
+                <a href="/Listings/Items/Manage" class="market-btn-link">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

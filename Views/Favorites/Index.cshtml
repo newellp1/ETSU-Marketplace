@@ -1,0 +1,84 @@
+@model ETSU_Marketplace.ViewModels.HomeIndexViewModel
+@{
+    ViewData["Title"] = "Your Favorites";
+}
+
+<section class="listings-wrap">
+    <a class="back-link" asp-controller="Home" asp-action="Index">← Back to Home</a>
+
+    <h1 class="page-title">Your Favorite Listings</h1>
+
+    <h3 class="section-subtitle">Favorite Items</h3>
+    @if (Model?.LatestItemListings?.Any() == true)
+    {
+        <div class="latest-grid">
+            @foreach (var card in Model.LatestItemListings)
+            {
+                <div class="latest-card">
+                    <a href="@card.DetailsUrl" style="text-decoration:none; color:inherit;">
+                        <div class="latest-img" style="position:relative;">
+                            <img src="@(string.IsNullOrWhiteSpace(card.ImageUrl) ? "/images/placeholder.png" : card.ImageUrl)"
+                                 alt="@card.Title" />
+
+                            @if (card.IsSold)
+                            {
+                                <span class="badge bg-danger position-absolute top-0 end-0 m-2">SOLD</span>
+                            }
+                        </div>
+
+                        <div class="latest-price">$@card.Price.ToString("0.00")</div>
+                        <div class="latest-name">@card.Title</div>
+                    </a>
+
+                    <form method="post" action="/Favorites/toggle/@card.Id" style="margin-top:10px;">
+                        <input type="hidden" name="returnUrl" value="/Favorites" />
+                        <button type="submit" class="btn btn-sm btn-outline-danger w-100">
+                            Remove Favorite
+                        </button>
+                    </form>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">You have no favorite item listings yet.</div>
+    }
+
+    <h3 class="section-subtitle" style="margin-top:24px;">Favorite Leases</h3>
+    @if (Model?.LatestLeaseListings?.Any() == true)
+    {
+        <div class="latest-grid">
+            @foreach (var card in Model.LatestLeaseListings)
+            {
+                <div class="latest-card">
+                    <a href="@card.DetailsUrl" style="text-decoration:none; color:inherit;">
+                        <div class="latest-img" style="position:relative;">
+                            <img src="@(string.IsNullOrWhiteSpace(card.ImageUrl) ? "/images/placeholder.png" : card.ImageUrl)"
+                                 alt="@card.Title" />
+
+                            @if (card.IsSold)
+                            {
+                                <span class="badge bg-danger position-absolute top-0 end-0 m-2">SOLD</span>
+                            }
+                        </div>
+
+                        <div class="latest-price">$@card.Price.ToString("0.00")</div>
+                        <div class="latest-name">@card.Title</div>
+                    </a>
+
+                    <form method="post" action="/Favorites/toggle/@card.Id" style="margin-top:10px;">
+                        <input type="hidden" name="returnUrl" value="/Favorites" />
+                        <button type="submit" class="btn btn-sm btn-outline-danger w-100">
+                            Remove Favorite
+                        </button>
+                    </form>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">You have no favorite lease listings yet.</div>
+    }
+</section>

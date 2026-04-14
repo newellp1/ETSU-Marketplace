@@ -1,0 +1,30 @@
+@using Microsoft.AspNetCore.Identity
+@using ETSU_Marketplace.Services
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@inject IUserRepository userRepo
+
+<div class="d-flex align-items-center gap-2">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        @* Logout Form *@
+        <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout"
+              asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+            <button type="submit" class="btn btn-dark fw-bold">Log Out</button>
+        </form>
+
+        @* Show user profile pic as manage tab*@
+        var user = await userRepo.ReadByUsernameAsync(User.Identity?.Name!);
+        var avatar = user!.Avatar!.Path;
+        <li class="nav-item">
+            <a id="manage" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
+                <img src="@avatar" class="avatar-circle" />
+            </a>
+        </li>
+    }
+    else
+    {
+        @* Login Link styled as a Dark Button *@
+        <a class="btn btn-dark fw-bold" asp-area="Identity" asp-page="/Account/Login">Log in</a>
+    }
+</div>

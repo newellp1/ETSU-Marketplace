@@ -1,0 +1,31 @@
+@model ETSU_Marketplace.ViewModels.HomeIndexViewModel
+@{
+    ViewData["Title"] = "Manage Items";
+}
+
+<section class="listings-wrap">
+    <a class="back-link" asp-controller="Home" asp-action="Index">← Back to Home</a>
+
+    <div class="d-flex justify-content-between align-items-center">
+        <h1 class="page-title mb-0">Items for Sale</h1>
+
+        <a class="btn btn-dark fw-bold" asp-controller="ItemListings" asp-action="Create">
+            + Create Listing
+        </a>
+    </div>
+    <h3 class="section-subtitle">Latest Listings</h3>
+
+    <div class="listings-row">
+        @if (Model?.LatestItemListings != null && Model.LatestItemListings.Any())
+        {
+            foreach (var listing in Model.LatestItemListings)
+            {
+                @await Html.PartialAsync("_ListingCard", listing)
+            }
+        }
+        else
+        {
+            <div class="empty-state">No item listings found.</div>
+        }
+    </div>
+</section>

@@ -1,0 +1,43 @@
+@model ETSU_Marketplace.ViewModels.MessagesIndexViewModel
+@{
+    ViewData["Title"] = "Messages";
+}
+
+<section class="listings-wrap">
+    <a class="back-link" asp-controller="Home" asp-action="Index">← Back to Home</a>
+    <h1 class="page-title">Messages</h1>
+
+    @if (Model.Threads.Any())
+    {
+        <div class="list-group">
+            @foreach (var thread in Model.Threads)
+            {
+                <a href="/Messages/@thread.ConversationId" class="list-group-item list-group-item-action">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div><strong>@thread.OtherUserName</strong></div>
+                            <div>@thread.ListingTitle (@thread.ListingType)</div>
+                            @if (!string.IsNullOrWhiteSpace(thread.LastMessagePreview))
+                            {
+                                <div class="text-muted">@thread.LastMessagePreview</div>
+                            }
+                        </div>
+                        <div class="text-end">
+                            @if (thread.IsSold)
+                            {
+                                <span class="badge bg-danger">Sold</span>
+                            }
+                            <div class="small text-muted">
+                                @(thread.LastMessageAtUtc?.ToLocalTime().ToString("g") ?? "")
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">No messages yet.</div>
+    }
+</section>

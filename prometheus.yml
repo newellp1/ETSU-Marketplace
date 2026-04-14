@@ -1,0 +1,7 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'etsu-marketplace'
+    static_configs:
+      - targets: ['web:8080'] # altered to point to Docker container of app

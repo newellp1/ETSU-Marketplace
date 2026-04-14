@@ -1,0 +1,193 @@
+@model ETSU_Marketplace.ViewModels.ListingCardViewModel
+@{
+    ViewData["Title"] = "Lease Details";
+    var returnUrl = $"{Context.Request.Path}{Context.Request.QueryString}";
+}
+
+<div class="listing-details-page">
+    <a class="back-link" href="javascript:void(0);" onclick="history.back();">← Back</a>
+</div>
+
+<div class="listing-details-card">
+    <div class="listing-details-image-wrapper" style="position:relative;">
+        @if (Model.ImageUrls?.Count > 1)
+    {
+        <button type="button" class="carousel-nav prev" onclick="scrollCarousel(-1)">&#10094;</button>
+        <button type="button" class="carousel-nav next" onclick="scrollCarousel(1)">&#10095;</button>
+        
+        <div class="carousel-counter-badge" id="carouselCounter">
+            1 / @Model.ImageUrls.Count
+        </div>
+    }
+
+    <div class="details-carousel">
+        <div class="details-carousel__track" id="carouselTrack">
+            @if (Model.ImageUrls != null && Model.ImageUrls.Any())
+            {
+                foreach (var url in Model.ImageUrls)
+                {
+                    <div class="details-carousel__slide">
+                        <img src="@url" alt="@Model.Title" />
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="details-carousel__slide">
+                    <img src="/images/placeholder.jpg" alt="No Image" />
+                </div>
+            }
+        </div>
+    </div>
+
+        @if (Model.IsSold)
+        {
+            <span class="badge bg-danger position-absolute top-0 end-0 m-2">SOLD</span>
+        }
+    </div>
+
+    <div class="listing-details-body">
+        <h1 class="listing-details-title">@Model.Title</h1>
+
+        @if (!string.IsNullOrWhiteSpace(Model.ShortDescription))
+        {
+            <p class="listing-details-subtitle">@Model.ShortDescription</p>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Model.Poster))
+        {
+            <a href="/Users/Details/@Model.PosterId">
+                <img src="@Model.PosterAvatar" class="avatar-circle" alt="avatar" />
+                <p class="listing-details-subtitle">@Model.Poster</p>
+            </a>
+        }
+
+        <div class="listing-details-price-row">
+            <div class="listing-details-price">$@Model.Price.ToString("0.00")</div>
+            <span class="badge">Lease</span>
+
+            @if (Model.IsSold)
+            {
+                <span class="badge bg-danger">Sold</span>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Model.CategoryLabel))
+            {
+                <span class="chip">@Model.CategoryLabel</span>
+            }
+        </div>
+
+        <div style="margin: 12px 0;">
+            <form method="post" action="/Favorites/toggle/@Model.Id">
+                <input type="hidden" name="returnUrl" value="@returnUrl" />
+                <button type="submit" class="btn @(Model.IsFavorited ? "btn-outline-danger" : "btn-outline-dark")">
+                    @(Model.IsFavorited ? "Remove Favorite" : "Add to Favorites")
+                </button>
+            </form>
+        </div>
+
+        @if (Model.ShowOwnerActions)
+        {
+            <div style="margin: 12px 0;">
+                <form method="post" action="/api/LeaseAPI/toggle-sold/@Model.Id">
+                    <button type="submit" class="btn @(Model.IsSold ? "btn-outline-success" : "btn-outline-secondary")">
+                        @(Model.IsSold ? "Mark Available" : "Mark Sold")
+                    </button>
+                </form>
+            </div>
+
+            <div style="margin: 12px 0;">
+                <a class="btn btn-outline-dark" href="/Messages">View Buyer Messages</a>
+            </div>
+        }
+        else if (!Model.IsSold)
+        {
+            <div style="margin: 12px 0;">
+                <form method="post" action="/Messages/start/@Model.Id">
+                    <button type="submit" class="btn btn-dark">Message Seller</button>
+                </form>
+            </div>
+        }
+
+        <div class="listing-details-meta">
+            <div class="meta-row"><span class="meta-label">Price:</span> <span>$@Model.Price.ToString("0.00")</span></div>
+            <div class="meta-row"><span class="meta-label">Type:</span> <span>Lease</span></div>
+            <div class="meta-row"><span class="meta-label">Status:</span> <span>@(Model.IsSold ? "Sold" : "Available")</span></div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.CategoryLabel))
+            {
+                <div class="meta-row"><span class="meta-label">Category:</span> <span>@Model.CategoryLabel</span></div>
+            }
+        </div>
+
+        <div class="details-divider"></div>
+
+        @if (Model.IsSold)
+        {
+            <div class="alert alert-warning">This lease listing has been marked as no longer available.</div>
+        }
+        else
+        {
+            <div class="alert alert-info">
+                Messaging is private. Buyers only see their own conversation with the seller.
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let currentIdx = 0;
+
+        function scrollCarousel(direction) {
+            const track = document.getElementById('carouselTrack');
+            const counter = document.getElementById('carouselCounter');
+            if (!track) return;
+
+            const slides = track.querySelectorAll('.details-carousel__slide');
+            const totalSlides = slides.length;
+
+            // Update Index
+            currentIdx += direction;
+
+            // Handle Looping
+            if (currentIdx >= totalSlides) {
+                currentIdx = 0;
+            } else if (currentIdx < 0) {
+                currentIdx = totalSlides - 1;
+            }
+
+            const targetScroll = currentIdx * track.clientWidth;
+            
+            // Logic: If we are looping (jumping from end to start), snap instantly 
+            // to avoid the "super fast blur". Otherwise, animate smoothly.
+            const isLooping = (direction === 1 && currentIdx === 0) || (direction === -1 && currentIdx === totalSlides - 1);
+            
+            if (isLooping) {
+                track.scrollTo({ left: targetScroll, behavior: 'auto' });
+            } else {
+                // High-Speed Animation
+                const start = track.scrollLeft;
+                const change = targetScroll - start;
+                const duration = 200;
+                let startTime = null;
+
+                function animate(currentTime) {
+                    if (!startTime) startTime = currentTime;
+                    const progress = currentTime - startTime;
+                    const val = Math.min(progress / duration, 1);
+                    const ease = val < 0.5 ? 2 * val * val : -1 + (4 - 2 * val) * val;
+                    
+                    track.scrollLeft = start + (change * ease);
+                    if (progress < duration) requestAnimationFrame(animate);
+                }
+                requestAnimationFrame(animate);
+            }
+
+            // Update the counter text
+            if (counter) {
+                counter.innerText = `${currentIdx + 1} / ${totalSlides}`;
+            }
+        }
+    </script>
+}

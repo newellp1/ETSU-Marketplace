@@ -1,0 +1,166 @@
+@model ETSU_Marketplace.ViewModels.HomeIndexViewModel
+@{
+    ViewData["Title"] = "Search Results";
+}
+
+<section class="listings-wrap">
+    <a class="back-link" asp-controller="Home" asp-action="Index">← Back to Home</a>
+
+    <h1 class="page-title">Search Results</h1>
+
+    <form method="get" asp-controller="Home" asp-action="Search" class="items-filter-bar">
+        <input type="hidden" name="q" value="@ViewBag.SearchQuery" />
+
+        <select name="category" class="filter-input">
+            <option value="">All Categories</option>
+            <option value="Textbook" selected="@(ViewBag.SelectedCategory == "Textbook")">Textbook</option>
+            <option value="Clothing" selected="@(ViewBag.SelectedCategory == "Clothing")">Clothing</option>
+            <option value="Vehicles" selected="@(ViewBag.SelectedCategory == "Vehicles")">Vehicles</option>
+            <option value="Gaming" selected="@(ViewBag.SelectedCategory == "Gaming")">Gaming</option>
+            <option value="Accessories" selected="@(ViewBag.SelectedCategory == "Accessories")">Accessories</option>
+            <option value="Furniture" selected="@(ViewBag.SelectedCategory == "Furniture")">Furniture</option>
+            <option value="Home" selected="@(ViewBag.SelectedCategory == "Home")">Home</option>
+        </select>
+
+        <select name="condition" class="filter-input">
+            <option value="">All Conditions</option>
+            <option value="BrandNew" selected="@(ViewBag.SelectedCondition == "BrandNew")">Brand new</option>
+            <option value="LikeNew" selected="@(ViewBag.SelectedCondition == "LikeNew")">Like new</option>
+            <option value="Excellent" selected="@(ViewBag.SelectedCondition == "Excellent")">Used - Excellent</option>
+            <option value="Good" selected="@(ViewBag.SelectedCondition == "Good")">Used - Good</option>
+            <option value="Fair" selected="@(ViewBag.SelectedCondition == "Fair")">Used - Fair</option>
+        </select>
+
+        <input type="number" step="0.01" name="minPrice" class="filter-input"
+               placeholder="Min Price" value="@ViewBag.MinPrice" />
+
+        <input type="number" step="0.01" name="maxPrice" class="filter-input"
+               placeholder="Max Price" value="@ViewBag.MaxPrice" />
+
+        <select name="sort" class="filter-input">
+            <option value="">Newest</option>
+            <option value="price_asc" selected="@(ViewBag.Sort == "price_asc")">Price: Low to High</option>
+            <option value="price_desc" selected="@(ViewBag.Sort == "price_desc")">Price: High to Low</option>
+        </select>
+
+        <button type="submit" class="filter-btn">Apply</button>
+
+        <a asp-controller="Home"
+           asp-action="Search"
+           asp-route-q="@ViewBag.SearchQuery"
+           class="filter-clear-btn">
+            Clear Filters
+        </a>
+    </form>
+
+    @if (ViewBag.SearchQuery != null)
+    {
+        <div class="filters-summary" style="margin: 6px 0 14px 0;">
+            <span><strong>Search:</strong> @ViewBag.SearchQuery</span>
+        </div>
+    }
+
+    <h3 class="section-subtitle">Items</h3>
+    @if (Model?.LatestItemListings?.Any() == true)
+    {
+        <div class="latest-grid">
+            @foreach (var card in Model.LatestItemListings)
+            {
+                <a class="latest-card"
+                   href="@card.DetailsUrl"
+                   data-title="@card.Title"
+                   data-description="@card.ShortDescription">
+                    <div class="latest-img" style="position:relative;">
+                        <img src="@(string.IsNullOrWhiteSpace(card.ImageUrl) ? "/images/placeholder.png" : card.ImageUrl)"
+                             alt="@card.Title" />
+
+                        @if (card.IsSold)
+                        {
+                            <span class="badge bg-danger position-absolute top-0 end-0 m-2">SOLD</span>
+                        }
+                    </div>
+
+                    <div class="latest-price">$@card.Price.ToString("0.00")</div>
+                    <div class="latest-name">
+                        @card.Title
+                        @if (card.IsSold)
+                        {
+                            <span class="text-danger"> • Sold</span>
+                        }
+                    </div>
+                </a>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">No item results.</div>
+    }
+
+    <h3 class="section-subtitle" style="margin-top:18px;">Leases</h3>
+    @if (Model?.LatestLeaseListings?.Any() == true)
+    {
+        <div class="latest-grid">
+            @foreach (var card in Model.LatestLeaseListings)
+            {
+                <a class="latest-card"
+                   href="@card.DetailsUrl"
+                   data-title="@card.Title"
+                   data-description="@card.ShortDescription">
+                    <div class="latest-img" style="position:relative;">
+                        <img src="@(string.IsNullOrWhiteSpace(card.ImageUrl) ? "/images/placeholder.png" : card.ImageUrl)"
+                             alt="@card.Title" />
+
+                        @if (card.IsSold)
+                        {
+                            <span class="badge bg-danger position-absolute top-0 end-0 m-2">SOLD</span>
+                        }
+                    </div>
+
+                    <div class="latest-price">$@card.Price.ToString("0.00")</div>
+                    <div class="latest-name">
+                        @card.Title
+                        @if (card.IsSold)
+                        {
+                            <span class="text-danger"> • Sold</span>
+                        }
+                    </div>
+                </a>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">No lease results.</div>
+    }
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const query = "@(ViewBag.SearchQuery ?? "")".trim();
+    if (!query) return;
+
+    const cards = Array.from(document.querySelectorAll(".latest-card"));
+
+    const data = cards.map(el => ({
+        element: el,
+        title: el.dataset.title || "",
+        description: el.dataset.description || ""
+    }));
+
+    const fuse = new Fuse(data, {
+        keys: [
+            { name: "title", weight: 0.75 },
+            { name: "description", weight: 0.25 }
+        ],
+        threshold: 0.45,
+        ignoreLocation: true,
+        minMatchCharLength: 2
+    });
+
+    const results = fuse.search(query);
+
+    cards.forEach(el => el.style.display = "none");
+    results.forEach(r => r.item.element.style.display = "");
+});
+</script>

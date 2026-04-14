@@ -1,0 +1,105 @@
+@model ETSU_Marketplace.ViewModels.ListingCardViewModel
+
+<div class="listing-card @(Model.IsSold ? "listing-card--sold" : "")">
+    <div class="listing-card__image" style="position: relative;">
+        <img src="@Model.ImageUrl" alt="@Model.Title" />
+
+        @if (Model.IsSold)
+        {
+            <span class="badge bg-danger position-absolute top-0 end-0 m-1" 
+                  style="font-size: 10px; padding: 2px 6px;">SOLD</span>
+        }
+    </div>
+
+    <div class="listing-card__body">
+        <div class="listing-card__top">
+            <h3 class="listing-card__title">@Model.Title</h3>
+            <div class="listing-card__price">$@Model.Price.ToString("0.00")</div>
+        </div>
+
+        <p class="listing-card__desc">@Model.ShortDescription</p>
+
+        <div class="listing-card__meta">
+            <span class="badge bg-secondary">@Model.ListingType</span>
+
+            @if (!string.IsNullOrWhiteSpace(Model.CategoryLabel))
+            {
+                <span class="badge bg-light text-dark border">@Model.CategoryLabel</span>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Model.ConditionLabel))
+            {
+                <span class="badge bg-light text-dark border">@Model.ConditionLabel</span>
+            }
+        </div>
+
+        <div class="listing-card__footer">
+            <div class="listing-card__actions">
+                @if (Model.ListingType == "Item")
+                {
+                    <a class="btn btn-sm btn-outline-primary fw-bold"
+                       asp-controller="ItemListings"
+                       asp-action="Details"
+                       asp-route-id="@Model.Id"
+                       asp-route-type="@Model.ListingType">
+                        View Details
+                    </a>
+                }
+                else
+                {
+                    <a class="btn btn-sm btn-outline-primary fw-bold"
+                       asp-controller="LeaseListings"
+                       asp-action="Details"
+                       asp-route-id="@Model.Id"
+                       asp-route-type="@Model.ListingType">
+                        View Details
+                    </a>
+                }
+
+                @if (Model.ShowOwnerActions)
+                {
+                    if (Model.ListingType == "Item")
+                    {
+                        <form method="post" action="/api/ItemAPI/toggle-sold/@Model.Id" style="display:inline;">
+                            <button type="submit" class="btn btn-sm @(Model.IsSold ? "btn-outline-success" : "btn-outline-secondary") fw-bold">
+                                @(Model.IsSold ? "Mark Available" : "Mark Sold")
+                            </button>
+                        </form>
+
+                        <a asp-controller="ItemListings" asp-action="Edit" asp-route-id="@Model.Id"
+                           class="btn btn-sm btn-outline-warning fw-bold">
+                            Edit
+                        </a>
+
+                        <a asp-controller="ItemListings" asp-action="Delete" asp-route-id="@Model.Id"
+                           class="btn btn-sm btn-outline-danger fw-bold">
+                            Delete
+                        </a>
+                    }
+                    else
+                    {
+                        <form method="post" action="/api/LeaseAPI/toggle-sold/@Model.Id" style="display:inline;">
+                            <button type="submit" class="btn btn-sm @(Model.IsSold ? "btn-outline-success" : "btn-outline-secondary") fw-bold">
+                                @(Model.IsSold ? "Mark Available" : "Mark Sold")
+                            </button>
+                        </form>
+
+                        <a asp-controller="LeaseListings" asp-action="Edit" asp-route-id="@Model.Id"
+                           class="btn btn-sm btn-outline-warning fw-bold">
+                            Edit
+                        </a>
+
+                        <a asp-controller="LeaseListings" asp-action="Delete" asp-route-id="@Model.Id"
+                           class="btn btn-sm btn-outline-danger fw-bold">
+                            Delete
+                        </a>
+                    }
+                }
+            </div>
+        </div>
+
+        <div class="listing-card__date">
+            Posted @Model.CreatedAt.ToString("MMM d, yyyy")
+        </div>
+    </div>
+</div>

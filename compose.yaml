@@ -1,0 +1,55 @@
+services:
+  web:
+    image: etsu-marketplace:10.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: etsu-marketplace-app
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Data Source=Data/Data.db
+    volumes:
+      - marketplace-data:/app/Data
+      - marketplace-images:/app/wwwroot/images/listings
+    restart: unless-stopped
+    networks:
+      - marketplace-net
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus-service
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - marketplace-net
+    depends_on:
+      - web
+    restart: unless-stopped
+
+  grafana:
+      image: grafana/grafana:latest
+      container_name: grafana-service
+      ports:
+        - "3000:3000"  
+      environment:
+        - GF_SECURITY_ADMIN_PASSWORD=admin 
+      volumes:
+        - grafana-storage:/var/lib/grafana
+      networks:
+        - marketplace-net
+      depends_on:
+        - prometheus
+
+volumes:
+  marketplace-data:
+  marketplace-images:
+  grafana-storage: # Keeps your dashboards safe if the container restarts
+
+networks:
+  marketplace-net:
+    driver: bridge

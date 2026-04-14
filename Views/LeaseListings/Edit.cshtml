@@ -1,0 +1,80 @@
+@model LeaseListing
+@{
+    ViewData["Title"] = "Edit Lease";
+}
+
+<div class="market-form-page">
+    <h1 class="market-form-title">Edit Lease Listing</h1>
+    <p class="market-form-subtitle">
+        Update the property details for "@Model.Title"
+    </p>
+
+    <div class="market-form-shell">
+        <form class="market-form" action="/api/LeaseAPI/update" method="post" 
+        enctype="multipart/form-data">
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="CreatedAt" />
+
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Address" class="control-label"></label>
+                <input asp-for="Address" class="form-control" />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label">Monthly Rent</label>
+                <input asp-for="Price" class="form-control" type="number" step="0.01" />
+            </div>
+
+            <div class="form-check">
+                <input class="form-check-input" asp-for="UtilitiesIncluded" />
+                <label class="form-check-label" asp-for="UtilitiesIncluded">
+                    Utilities Included?
+                </label>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="LeaseStart" class="control-label">Available From</label>
+                <input asp-for="LeaseStart" class="form-control" type="date" />
+                <span asp-validation-for="LeaseStart" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="LeaseEnd" class="control-label">Lease Ends</label>
+                <input asp-for="LeaseEnd" class="form-control" type="date" />
+                <span asp-validation-for="LeaseEnd" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <textarea asp-for="Description" class="form-control"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label">Upload Images</label>
+                <input type="file" name="images" class="form-control" multiple accept="image/*" />
+                <small class="text-muted">You can select multiple files.</small>
+            </div>
+
+            <div class="market-form-actions">
+                <button type="submit" class="market-btn-primary">
+                    Save Changes
+                </button>
+
+                <a href="/Listings/Leases/Manage" class="market-btn-link">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>

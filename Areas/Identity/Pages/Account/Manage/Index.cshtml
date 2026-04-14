@@ -1,0 +1,53 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Profile";
+    ViewData["ActivePage"] = ManageNavPages.Index;
+}
+
+<h3>@ViewData["Title"]</h3>
+<partial name="_StatusMessage" for="StatusMessage" />
+<div class="row">
+    <div class="col-md-6">
+        @* Added enctype for file uploads *@
+        <form id="profile-form" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            
+            <div class="mb-3">
+                <label class="form-label">Current Avatar</label>
+                <div class="mb-2">
+                    <img src="@Model.Input.AvatarUrl" alt="Avatar" class="img-thumbnail"
+                         style="width: 150px; height: 150px; object-fit: cover;">
+                </div>
+                <input asp-for="Input.AvatarFile" class="form-control" type="file" accept="image/*" />
+                <span asp-validation-for="Input.AvatarFile" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                @* Removed 'disabled' to allow modification *@
+                <input asp-for="Input.Username" class="form-control" placeholder="Choose your username." />
+                <label asp-for="Input.Username" class="form-label"></label>
+                <span asp-validation-for="Input.Username" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <textarea asp-for="Input.Bio" class="form-control" style="height: 100px"
+                          placeholder="Tell us about yourself."></textarea>
+                <label asp-for="Input.Bio" class="form-label"></label>
+                <span asp-validation-for="Input.Bio" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number." />
+                <label asp-for="Input.PhoneNumber" class="form-label"></label>
+                <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+            </div>
+
+            <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

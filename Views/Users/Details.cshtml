@@ -1,0 +1,102 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using ETSU_Marketplace.Models
+@inject UserManager<ApplicationUser> UserManager
+@model ETSU_Marketplace.Models.ApplicationUser
+@{
+    ViewData["Title"] = $"{Model.UserName}'s Profile";
+    
+    // Filter listings into two groups
+    var activeListings = Model.Listings.Where(l => !l.IsSold).OrderByDescending(l => l.CreatedAt).ToList();
+    var soldListings = Model.Listings.Where(l => l.IsSold).OrderByDescending(l => l.CreatedAt).ToList();
+}
+
+<div class="listing-details-page">
+    <a class="back-link" href="javascript:void(0);" onclick="history.back();">
+        ← Back
+    </a>
+
+    <div class="listing-details-hero">
+        <div class="listing-details-card">
+            <div class="listing-details-image">
+                @if (!string.IsNullOrWhiteSpace(Model.Avatar?.Path))
+                {
+                    <img src="@Model.Avatar.Path" alt="User Avatar" />
+                }
+                else
+                {
+                    <img src="/images/default-avatar.jpg" alt="Default Avatar" />
+                }
+            </div>
+            <div class="listing-details-body">
+                <h1 class="listing-details-title">@Model.FirstName @Model.LastName</h1>
+                <p class="listing-details-subtitle">@@@Model.UserName</p>
+                
+                @if (!string.IsNullOrWhiteSpace(Model.Bio))
+                {
+                    <div class="listing-details-meta">
+                        <div class="meta-label">About</div>
+                        <p>@Model.Bio</p>
+                    </div>
+                }
+
+                <div class="listing-details-price-row">
+                    <span class="chip">@Model.Listings.Count Total Listings</span>
+                    <span class="badge">Seller</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="user-listings-content">
+            
+            @* --- ACTIVE LISTINGS SECTION --- *@
+            <h2 class="latest-title" style="margin-bottom: 20px;">Active Listings</h2>
+            @if (activeListings.Any())
+            {
+                <div class="listings-row">
+                    @foreach (var listing in activeListings)
+                    {
+                        var cardVm = MapToViewModel(listing);
+                        <partial name="_ListingCard" model="cardVm" />
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <p>No active items for sale right now.</p>
+                </div>
+            }
+
+            @if (soldListings.Any())
+            {
+                <h2 class="latest-title" style="margin-top: 40px; margin-bottom: 20px; opacity: 0.7;">Sold Items</h2>
+                <div class="listings-row" style="opacity: 0.8;"> @* Slightly fade sold items *@
+                    @foreach (var listing in soldListings)
+                    {
+                        var cardVm = MapToViewModel(listing);
+                        <partial name="_ListingCard" model="cardVm" />
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@functions {
+    // Helper function to avoid repeating the mapping logic twice
+    public ETSU_Marketplace.ViewModels.ListingCardViewModel MapToViewModel(Listing listing)
+    {
+        return new ETSU_Marketplace.ViewModels.ListingCardViewModel
+        {
+            Id = listing.Id,
+            Title = listing.Title,
+            ShortDescription = listing.Description,
+            Price = listing.Price,
+            CreatedAt = listing.CreatedAt,
+            ImageUrls = listing.Images.Select(i => i.Path).ToList(),
+            ListingType = listing is ItemListing ? "Item" : "Lease",
+            IsSold = listing.IsSold, // CRITICAL: This triggers the overlay in your partial
+            ShowOwnerActions = false
+        };
+    }
+}

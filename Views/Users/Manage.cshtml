@@ -1,0 +1,64 @@
+﻿@model ETSU_Marketplace.Models.ApplicationUser
+@{
+    ViewData["Title"] = "Manage My Listings";
+    var activeListings = Model.Listings.Where(l => !l.IsSold).OrderByDescending(l => l.CreatedAt).ToList(); 
+    var soldListings = Model.Listings.Where(l => l.IsSold).OrderByDescending(l => l.CreatedAt).ToList(); 
+}
+
+<div class="listing-details-page">
+    <div class="market-form-shell">
+        <h1 class="market-form-title">Manage My Listings</h1>
+        <p class="market-form-subtitle">Update, delete, or mark your items as sold.</p>
+    </div>
+
+    <div class="user-listings-content" style="margin-top: 20px;">
+        <h2 class="latest-title" style="margin-bottom: 20px;">Active Listings (@activeListings.Count)</h2>
+        @if (activeListings.Any())
+        {
+            <div class="listings-row">
+                @foreach (var listing in activeListings)
+                {
+                    var cardVm = MapToManageViewModel(listing);
+                    <partial name="_ListingCard" model="cardVm" /> 
+                }
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <p>You don't have any active listings.</p>
+            </div>
+        }
+
+        @* --- SOLD SECTION --- *@
+        @if (soldListings.Any())
+        {
+            <h2 class="latest-title" style="margin-top: 40px; margin-bottom: 20px; opacity: 0.7;">Sold Archive</h2>
+            <div class="listings-row" style="opacity: 0.8;">
+                @foreach (var listing in soldListings)
+                {
+                    var cardVm = MapToManageViewModel(listing);
+                    <partial name="_ListingCard" model="cardVm" />
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@functions {
+    public ETSU_Marketplace.ViewModels.ListingCardViewModel MapToManageViewModel(Listing listing)
+    {
+        return new ETSU_Marketplace.ViewModels.ListingCardViewModel
+        {
+            Id = listing.Id,
+            Title = listing.Title,
+            ShortDescription = listing.Description,
+            Price = listing.Price,
+            CreatedAt = listing.CreatedAt,
+            ImageUrls = listing.Images.Select(i => i.Path).ToList(),
+            ListingType = listing is ItemListing ? "Item" : "Lease", 
+            IsSold = listing.IsSold,
+            ShowOwnerActions = true 
+        };
+    }
+}

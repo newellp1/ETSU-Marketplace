@@ -1,0 +1,76 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="container-fluid p-0 overflow-hidden">
+    <div class="row g-0 min-vh-100">
+        <div class="col-md-6 d-none d-md-block">
+            <img src="~/images/FarmersMarket.jpg" class="w-100 h-100 rounded"
+                 style="object-fit: cover; object-position: center;" alt="Farmers Market" />
+        </div>
+
+        <div class="col-md-6 d-flex align-items-center justify-content-center">
+            <div class="p-5" style="width: 100%; max-width: 450px;">
+                <section>
+                    <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post"
+                          enctype="multipart/form-data">
+                        <div class="text-center mb-4">
+                            <img src="~/images/logo.png" alt="Logo" class="mb-3" style="height: 40px;" />
+                            <h2 class="fw-bold h3">Create an account</h2>
+                        </div>
+
+                        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.Email" class="form-control" placeholder="name@example.com" />
+                            <label asp-for="Input.Email">Email address</label>
+                            <span asp-validation-for="Input.Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.Password" class="form-control" placeholder="Password" />
+                            <label asp-for="Input.Password">Password</label>
+                            <span asp-validation-for="Input.Password" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating mb-4">
+                            <input asp-for="Input.ConfirmPassword" class="form-control"
+                                   placeholder="Confirm Password" />
+                            <label asp-for="Input.ConfirmPassword">Confirm Password</label>
+                            <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.FirstName" class="form-control" placeholder="First Name" />
+                            <label asp-for="Input.FirstName"></label>
+                            <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.LastName" class="form-control" placeholder="Last Name" />
+                            <label asp-for="Input.LastName"></label>
+                            <span asp-validation-for="Input.LastName" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Input.AvatarFile" class="control-label"></label>
+                            <input asp-for="Input.AvatarFile" type="file" class="form-control" accept="image/*" />
+                            <span asp-validation-for="Input.AvatarFile" class="text-danger"></span>
+                        </div>
+
+                        <button id="login-submit" type="submit"
+                                class="w-100 btn identity-btn-dark btn-lg py-3 fw-bold mb-3" style="border-radius: 50px;">
+                            Continue
+                        </button>
+                    </form>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

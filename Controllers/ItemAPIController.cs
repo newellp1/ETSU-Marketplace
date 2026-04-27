@@ -2,6 +2,7 @@ using ETSU_Marketplace.Models;
 using ETSU_Marketplace.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ETSU_Marketplace.Controllers;
 
@@ -9,12 +10,51 @@ namespace ETSU_Marketplace.Controllers;
 [ApiController]
 public class ItemAPIController : BaseAPIController<ItemListing, IItemListingRepository>
 {
+    private readonly ApplicationDbContext _db;
+
     public ItemAPIController(
         IItemListingRepository itemRepo,
-        UserManager<ApplicationUser> userManager)
-        : base(itemRepo, userManager) { }
+        UserManager<ApplicationUser> userManager,
+        ApplicationDbContext db)
+        : base(itemRepo, userManager)
+    {
+        _db = db;
+    }
 
     protected override string GetRedirectPath() => "/Manage";
+
+    // GET: api/ItemAPI/search?query=book
+    [HttpGet("search")]
+    public async Task<IActionResult> Search(string? query)
+    {
+        var listings = _db.ItemListings
+            .Include(i => i.Images)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(query))
+        {
+            listings = listings.Where(i =>
+                i.Title.Contains(query) ||
+                i.Description.Contains(query));
+        }
+
+        var results = await listings
+            .OrderByDescending(i => i.CreatedAt)
+            .Select(i => new
+            {
+                id = i.Id,
+                title = i.Title,
+                price = i.Price,
+                description = i.Description,
+                imageUrl = i.Images.Any()
+                    ? i.Images.First().Path
+                    : "/images/placeholder.png",
+                detailsUrl = $"/Listings/Items/Details/{i.Id}?type=Item"
+            })
+            .ToListAsync();
+
+        return Ok(results);
+    }
 
     // POST: api/ItemAPI
     [HttpPost]

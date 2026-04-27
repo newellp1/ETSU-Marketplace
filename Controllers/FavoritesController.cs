@@ -92,6 +92,8 @@ namespace ETSU_Marketplace.Controllers
             var existingFavorite = await _db.FavoriteListings
                 .FirstOrDefaultAsync(f => f.UserId == userId && f.ListingId == listingId);
 
+            bool isFavorited;
+
             if (existingFavorite == null)
             {
                 _db.FavoriteListings.Add(new FavoriteListing
@@ -99,23 +101,29 @@ namespace ETSU_Marketplace.Controllers
                     UserId = userId,
                     ListingId = listingId
                 });
+
+                isFavorited = true;
             }
             else
             {
                 _db.FavoriteListings.Remove(existingFavorite);
+                isFavorited = false;
             }
 
             await _db.SaveChangesAsync();
 
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return Json(new
+                {
+                    success = true,
+                    isFavorited = isFavorited
+                });
+            }
+
             if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
                 return LocalRedirect(returnUrl);
-            }
-
-            var referer = Request.Headers["Referer"].ToString();
-            if (!string.IsNullOrWhiteSpace(referer))
-            {
-                return Redirect(referer);
             }
 
             return RedirectToAction("Index");

@@ -4,24 +4,38 @@ using ETSU_Marketplace.ViewModels;
 
 namespace ETSU_Marketplace.Controllers
 {
+    /// <summary>
+    /// Controller responsible for handling homepage and search functionality.
+    /// Displays latest listings and allows users to search/filter listings.
+    /// </summary>
     public class HomeController : Controller
     {
+        // Database context used to retrieve listings
         private readonly ApplicationDbContext _db;
 
+        /// <summary>
+        /// Constructor that injects the database context.
+        /// </summary>
+        /// <param name="db">Application database context</param>
         public HomeController(ApplicationDbContext db)
         {
             _db = db;
         }
 
+        /// <summary>
+        /// Displays the homepage with latest item and lease listings.
+        /// </summary>
+        /// <returns>Home page view with recent listings</returns>
         public IActionResult Index()
         {
-            const int take = 8;
+            const int take = 8; // Limit number of listings shown
 
+            // Get latest item listings
             var latestItems = _db.ItemListings
                 .Include(x => x.Images)
                 .Include(x => x.ListingCategories)
-                .AsNoTracking()
-                .OrderBy(x => x.IsSold)
+                .AsNoTracking() // Improves performance for read-only queries
+                .OrderBy(x => x.IsSold) // Show available items first
                 .ThenByDescending(x => x.CreatedAt)
                 .Take(take)
                 .Select(x => new ListingCardViewModel
@@ -33,14 +47,20 @@ namespace ETSU_Marketplace.Controllers
                     CreatedAt = x.CreatedAt,
                     IsSold = x.IsSold,
                     ListingType = "Item",
+
+                    // Combine categories into a string
                     CategoryLabel = string.Join(", ",
                         x.ListingCategories.Select(lc => lc.Category.ToString())),
+
                     ConditionLabel = x.Condition.ToString(),
                     DetailsUrl = $"/Listings/Items/Details/{x.Id}?type=Item",
+
+                    // Map image paths
                     ImageUrls = x.Images.Select(i => i.Path).ToList(),
                 })
                 .ToList();
 
+            // Get latest lease listings
             var latestLeases = _db.LeaseListings
                 .Include(x => x.Images)
                 .AsNoTracking()
@@ -63,6 +83,7 @@ namespace ETSU_Marketplace.Controllers
                 })
                 .ToList();
 
+            // Build view model
             var vm = new HomeIndexViewModel
             {
                 LatestItemListings = latestItems,
@@ -71,14 +92,27 @@ namespace ETSU_Marketplace.Controllers
 
             return View(vm);
         }
-        // GET: /Search
+
+        /// <summary>
+        /// Handles search and filtering of listings.
+        /// Supports keyword search, category, condition, price range, and sorting.
+        /// </summary>
+        /// <param name="q">Search query</param>
+        /// <param name="category">Selected category filter</param>
+        /// <param name="condition">Selected condition filter</param>
+        /// <param name="minPrice">Minimum price filter</param>
+        /// <param name="maxPrice">Maximum price filter</param>
+        /// <param name="sort">Sort option</param>
+        /// <returns>Search results view</returns>
         public IActionResult Search(string? q, string? category, string? condition, decimal? minPrice, decimal? maxPrice, string? sort)
         {
+            // If no search query, redirect to homepage
             if (string.IsNullOrWhiteSpace(q))
                 return RedirectToAction("Index");
 
-            const int take = 200;
+            const int take = 200; // Limit results
 
+            // Get item listings
             var items = _db.ItemListings
                 .Include(x => x.Images)
                 .Include(x => x.ListingCategories)
@@ -103,6 +137,7 @@ namespace ETSU_Marketplace.Controllers
                 })
                 .ToList();
 
+            // Get lease listings
             var leases = _db.LeaseListings
                 .Include(x => x.Images)
                 .AsNoTracking()
@@ -123,32 +158,40 @@ namespace ETSU_Marketplace.Controllers
                 })
                 .ToList();
 
+            // Clean up filter inputs
             category = string.IsNullOrWhiteSpace(category) ? null : category.Trim();
             condition = string.IsNullOrWhiteSpace(condition) ? null : condition.Trim();
             sort = string.IsNullOrWhiteSpace(sort) ? null : sort.Trim();
 
+            // Apply category filter
             if (category != null)
             {
-                items = items.Where(x => string.Equals(x.CategoryLabel, category, StringComparison.OrdinalIgnoreCase)).ToList();
+                items = items.Where(x =>
+                    string.Equals(x.CategoryLabel, category, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
+            // Apply condition filter
             if (condition != null)
             {
-                items = items.Where(x => string.Equals(x.ConditionLabel, condition, StringComparison.OrdinalIgnoreCase)).ToList();
+                items = items.Where(x =>
+                    string.Equals(x.ConditionLabel, condition, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
+            // Apply minimum price filter
             if (minPrice.HasValue)
             {
                 items = items.Where(x => x.Price >= minPrice.Value).ToList();
                 leases = leases.Where(x => x.Price >= minPrice.Value).ToList();
             }
 
+            // Apply maximum price filter
             if (maxPrice.HasValue)
             {
                 items = items.Where(x => x.Price <= maxPrice.Value).ToList();
                 leases = leases.Where(x => x.Price <= maxPrice.Value).ToList();
             }
 
+            // Apply sorting to items
             items = sort switch
             {
                 "price_asc" => items.OrderBy(x => x.IsSold).ThenBy(x => x.Price).ToList(),
@@ -156,6 +199,7 @@ namespace ETSU_Marketplace.Controllers
                 _ => items.OrderBy(x => x.IsSold).ThenByDescending(x => x.CreatedAt).ToList()
             };
 
+            // Apply sorting to leases
             leases = sort switch
             {
                 "price_asc" => leases.OrderBy(x => x.IsSold).ThenBy(x => x.Price).ToList(),
@@ -163,6 +207,7 @@ namespace ETSU_Marketplace.Controllers
                 _ => leases.OrderBy(x => x.IsSold).ThenByDescending(x => x.CreatedAt).ToList()
             };
 
+            // Store filter values for UI display
             ViewBag.SearchQuery = q;
             ViewBag.SelectedCategory = category;
             ViewBag.SelectedCondition = condition;
@@ -170,6 +215,7 @@ namespace ETSU_Marketplace.Controllers
             ViewBag.MaxPrice = maxPrice;
             ViewBag.Sort = sort;
 
+            // Return results view
             return View("SearchResults", new HomeIndexViewModel
             {
                 LatestItemListings = items,

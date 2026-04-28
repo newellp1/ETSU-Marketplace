@@ -31,6 +31,11 @@
 
     <h3 class="section-subtitle">Latest Listings</h3>
 
+    <input type="text"
+           id="ajaxItemSearch"
+           class="filter-input"
+           placeholder="Live search items without refreshing..." />
+
     <form method="get" asp-action="Items" class="items-filter-bar">
         <input type="hidden" name="q" value="@ViewBag.SearchQuery" />
 
@@ -77,34 +82,51 @@
 
     @if (Model?.LatestItemListings != null && Model.LatestItemListings.Any())
     {
-        <div class="latest-grid">
+        <div class="latest-grid" id="itemsGrid">
             @foreach (var card in Model.LatestItemListings)
             {
-                <a class="latest-card" href="@card.DetailsUrl" data-title="@card.Title"
-                   data-description="@card.ShortDescription">
-                    <div class="latest-img" style="position:relative;">
-                        <img src="@(card.ImageUrl)" alt="@card.Title" />
+                <div class="latest-card-wrapper">
+                    <a class="latest-card"
+                       href="@card.DetailsUrl"
+                       data-title="@card.Title"
+                       data-description="@card.ShortDescription">
 
-                        @if (card.IsSold)
-                        {
-                            <span class="badge bg-danger position-absolute top-0 end-0 m-2">SOLD</span>
-                        }
-                    </div>
+                        <div class="latest-img" style="position:relative;">
+                            <img src="@card.ImageUrl" alt="@card.Title" />
 
-                    <div class="latest-price">$@card.Price.ToString("0.00")</div>
-                    <div class="latest-name">
-                        @card.Title
-                        @if (card.IsSold)
-                        {
-                            <span class="text-danger"> • Sold</span>
-                        }
-                    </div>
-                </a>
+                            @if (card.IsSold)
+                            {
+                                <span class="badge bg-danger position-absolute top-0 end-0 m-2">SOLD</span>
+                            }
+                        </div>
+
+                        <div class="latest-price">$@card.Price.ToString("0.00")</div>
+
+                        <div class="latest-name">
+                            @card.Title
+                            @if (card.IsSold)
+                            {
+                                <span class="text-danger"> • Sold</span>
+                            }
+                        </div>
+                    </a>
+
+                    <button type="button"
+                            class="favorite-btn"
+                            data-listing-id="@card.Id">
+                        ☆ Favorite
+                    </button>
+                </div>
             }
+        </div>
+
+        <div class="empty-state" id="noItemsMessage" style="display:none;">
+            No item listings found.
         </div>
     }
     else
     {
-        <div class="empty-state">No item listings found.</div>
+        <div class="empty-state" id="noItemsMessage">No item listings found.</div>
+        <div class="latest-grid" id="itemsGrid"></div>
     }
 </section>

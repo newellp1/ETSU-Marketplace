@@ -1,19 +1,161 @@
 # ETSU Marketplace 
 (Palwasha Newell & Nathanael Wolfe)
 
+## Project Proposal
+
+### 1. Application Overview
+
+ETSU Marketplace is a university-exclusive web-based marketplace that allows verified students to buy, sell, and exchange items, as well as post and browse lease takeover requests. The platform is restricted to university students through email authentication to ensure a safe and trusted campus environment.
+
+The purpose of this application is to:
+- Provide a safe marketplace restricted to university students
+- Reduce scams common on public marketplaces
+- Centralize item sales and lease takeover opportunities for campus life
+
+This application is built using ASP.NET Core MVC and follows best practices in full-stack web development as required by the course guidelines.
+
+---
+
+### 2. Target Users
+
+**Primary Users:**
+- University Students
+
+**Secondary Users:**
+- Administrators (moderation only)
+
+---
+
+### 3. Core Functionalities (User Stories Summary)
+
+#### Authentication & Access Control
+- Students can register using their university email address
+- Students can log in to access marketplace features
+- Access is restricted to verified university students only
+
+#### Item Listings
+- Students can create listings with:
+  - Title
+  - Description
+  - Price
+  - Images
+- Students can edit their own listings
+- Students can delete their own listings
+- Students can view all active listings
+- Students can search listings
+- Students can filter listings by category
+- Students can view seller profiles
+- Students can contact sellers through internal messaging
+
+#### Lease Takeover Listings
+- Students can create lease takeover requests with:
+  - Title
+  - Description
+  - Monthly rent
+  - Images
+- Students can edit lease takeover requests
+- Students can delete lease takeover requests
+- Students can filter lease takeover listings
+- Students can contact lease posters via messaging
+
+#### Messaging System
+- Students can send messages to other students
+- Messages can be related to a specific listing
+- Students can receive messages from other students
+
+---
+
+### 4. Data Model Overview
+
+The system includes the following main entities:
+- ApplicationUser
+- Listing
+- LeaseTakeover
+- Category
+- ListingCategory (many-to-many bridge table)
+- ListingImage
+- Message
+
+**Many-to-Many Relationship:**
+- A Listing can belong to multiple Categories
+- A Category can have multiple Listings
+- Implemented using the ListingCategory junction table
+
+---
+
+### 5. Technologies to Be Used
+
+- ASP.NET Core MVC
+- C#
+- Entity Framework Core
+- SQLite
+- RESTful Web API
+- JavaScript
+- AJAX
+- Bootstrap
+- GitHub
+
+---
+
+### 6. REST API Design
+
+A RESTful API is implemented using standard HTTP methods:
+- GET – Retrieve data
+- POST – Create data
+- PUT – Update data
+- DELETE – Remove data
+
+---
+
+### 7. JavaScript & AJAX Features
+
+The application includes asynchronous features:
+- Live search without page reload
+- Favoriting listings using AJAX
+- Real-time messaging using SignalR
+
+---
+
+### 8. User Interface & Accessibility
+
+- Responsive design using Bootstrap
+- Custom visual styling
+- Accessible navigation structure
+- WCAG 2.1 AA accessibility considerations
+
+---
+
+### 9. System Limitations
+
+**In Scope:**
+- Student-only marketplace
+- Item listings
+- Lease takeover requests
+- Messaging between users
+- Basic profile viewing
+
+**Out of Scope:**
+- Online payments
+- Mobile application
+- Advanced identity verification
+- Rating/review system
+
+---
+
 ## Project Overview
 ETSU Marketplace is a full-stack ASP.NET Core MVC web application designed to allow users to create, browse, and manage marketplace listings. The platform enables users to buy, sell, and lease items while interacting with other users through messaging and personalized features such as favorites.
 
-The application demonstrates core web development concepts including MVC architecture, RESTful APIs, database design, authentication, and client-side interactivity.
+The application demonstrates core web development concepts including MVC architecture, RESTful APIs, database design, authentication, and client-side interactivity. This project demonstrates a complete full-stack application integrating backend, frontend, and real-time communication technologies.
 
 ---
 
 ## Features
 - User registration and authentication
+- Full CRRUD (Create, Read, Read All, Update, Delete) operations for listings
 - Create, view, update, and delete listings (items and leases)
 - Search and filter listings
 - Favorite/unfavorite listings
-- Real-time messaging between users
+- Real-time messaging between users (SignalR)
 - Categorization of listings
 - Responsive UI for desktop and mobile devices
 
@@ -41,81 +183,46 @@ The application follows the ASP.NET Core MVC architecture pattern. Controllers h
 
 ![Entity Relationship Diagram](docs/ERD.png)
 
-The data model consists of multiple interconnected entities including users, listings, categories, messages, and favorites. Relationships include one-to-many and many-to-many associations, implemented using Entity Framework Core.
+The data model consists of multiple interconnected entities including users, listings, categories, messages, and favorites. Relationships include one-to-many and many-to-many associations, implemented using Entity Framework Core. These relationships allow flexible connections such as users favoriting listings and listings belonging to multiple categories.
 
 ---
 
 ## API Endpoints
 
-The application provides a RESTful API to support data operations and asynchronous features.
+The application provides a RESTful API to support data operations and asynchronous features. The API follows REST principles and uses standard HTTP methods including GET, POST, PUT, and DELETE.
 
 ### Item Listings
-- `GET /api/ItemAPI` – Retrieve all item listings
-- `GET /api/ItemAPI/{id}` – Retrieve a specific item listing
-- `POST /api/ItemAPI` – Create a new item listing
-- `PUT /api/ItemAPI/{id}` – Update an existing item listing
-- `DELETE /api/ItemAPI/{id}` – Delete an item listing
+- `GET /api/ItemAPI`
+- `GET /api/ItemAPI/{id}`
+- `POST /api/ItemAPI`
+- `PUT /api/ItemAPI/{id}`
+- `DELETE /api/ItemAPI/{id}`
 
 ### Lease Listings
-- `GET /api/LeaseAPI` – Retrieve all lease listings
-- `GET /api/LeaseAPI/{id}` – Retrieve a specific lease listing
-- `POST /api/LeaseAPI` – Create a new lease listing
-- `PUT /api/LeaseAPI/{id}` – Update a lease listing
-- `DELETE /api/LeaseAPI/{id}` – Delete a lease listing
+- `GET /api/LeaseAPI`
+- `GET /api/LeaseAPI/{id}`
+- `POST /api/LeaseAPI`
+- `PUT /api/LeaseAPI/{id}`
+- `DELETE /api/LeaseAPI/{id}`
+
+---
+
+## AJAX and Asynchronous Features
+
+- Favoriting listings updates instantly without reloading the page
+- Live search dynamically filters listings using API calls
+- SignalR is used for real-time messaging between users
 
 ---
 
 ## User Interface & User Experience (UI/UX)
 
-The ETSU Marketplace application is designed with a focus on usability, accessibility, and responsiveness to provide a seamless experience for all users.
-
-### Design Approach
-The interface uses a clean layout with consistent design patterns and clear visual hierarchy, making it easy for users to navigate and interact with the system.
-
-### Responsive Design
-Bootstrap is used to ensure responsiveness across desktop, tablet, and mobile devices.
-
-### Navigation
-The application uses a structured navigation bar that allows users to easily access:
-- Listings
-- Create Listing
-- Favorites
-- Messaging
-
-### Accessibility (WCAG 2.1 Considerations)
-- Semantic HTML elements are used
-- Images include descriptive alt text
-- Color contrast is considered for readability
-- Forms include labels and validation messages
-- Navigation is consistent and predictable
-
-### User Interaction
-Interactive features such as real-time messaging and dynamic search improve user engagement and reduce page reloads.
+- Responsive design using Bootstrap
+- Clean navigation and layout
+- Accessible UI (WCAG considerations)
+- Interactive user experience
 
 ---
-
-## Testing Strategy
-The application includes both manual and automated testing strategies. Test cases are designed to validate core functionalities such as listing creation, user authentication, messaging, and API operations.
-
----
-
-## Development Practices
-- Version control is managed using Git and GitHub
-- Code follows consistent naming and structure conventions
-- Comments are included to describe the purpose of classes, methods, and functions
-- Modular design is used to separate concerns (controllers, services, models)
-
----
-
-## Deployment
-The application can be run locally using the .NET CLI or Visual Studio.
-
----
-
-## Setup Instructions
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/newellp1/ETSU-Marketplace.git
 
 ## AI Disclosure
-ChatGPT was used to assist with debugging, identifying missing project requirements, and improving documentation.  These tools provided guidance and suggestions.  However, all design decisions, implementation, and final code were completed by the development team.
+ChatGPT was used as a learning aid to assist with debugging, understanding concepts, and identifying missing requirements. It was also used to improve documentation clarity. All design decisions, implementation, and final code were completed by the development team.

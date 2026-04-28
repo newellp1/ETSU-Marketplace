@@ -71,7 +71,7 @@ namespace ETSU_Marketplace.Controllers
 
             return View(vm);
         }
-
+        // GET: /Search
         public IActionResult Search(string? q, string? category, string? condition, decimal? minPrice, decimal? maxPrice, string? sort)
         {
             if (string.IsNullOrWhiteSpace(q))

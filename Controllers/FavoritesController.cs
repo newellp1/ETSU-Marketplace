@@ -19,7 +19,7 @@ namespace ETSU_Marketplace.Controllers
             _db = db;
             _userManager = userManager;
         }
-
+        // GET: /Favorites
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
@@ -80,6 +80,7 @@ namespace ETSU_Marketplace.Controllers
             return View(vm);
         }
 
+        // POST: /Favorites/Toggle
         [HttpPost("toggle/{listingId}")]
         public async Task<IActionResult> Toggle(int listingId, string? returnUrl)
         {

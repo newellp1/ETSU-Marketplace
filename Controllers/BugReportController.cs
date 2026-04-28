@@ -12,13 +12,13 @@ namespace ETSU_Marketplace.Controllers
         {
             _gitHubIssueService = gitHubIssueService;
         }
-
+        // GET: /BugReport/Index
         [HttpGet]
         public IActionResult Index()
         {
             return View(new BugReportForm());
         }
-
+        // POST: /BugReport/Index
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(BugReportForm model)
